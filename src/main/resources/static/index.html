@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="cz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wowa Trust Corporation</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+<div class="container">
+    <h1 onclick="resetPage()">Wowa Trust Corporation</h1>
+    <div class="button-container">
+        <button id="addInsuredButton" class="button" onclick="showAddForm()">Add Insured</button>
+        <button id="removeInsuredButton" class="button" onclick="removeInsured()">Remove Insured</button>
+        <button id="findInsuredButton" class="button" onclick="findInsured()">Find Insured</button>
+        <button id="listAllInsuredButton" class="button" onclick="listAllInsured()">List All Insured</button>
+    </div>
+
+    <!-- Formulář pro přidání pojištěnce -->
+    <form id="insuredForm" style="display: none;">
+        <label for="id">ID:</label>
+        <input type="number" id="id" name="id" required>
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="surname">Surname:</label>
+        <input type="text" id="surname" name="surname" required>
+        <label for="birthDate">Birth Date:</label>
+        <input type="date" id="birthDate" name="birthDate" required>
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" required>
+        <label for="telephoneNumber">Telephone Number:</label>
+        <input type="tel" id="telephoneNumber" name="telephoneNumber" required>
+        <label for="bankAccountNumber">Bank Account Number:</label>
+        <input type="text" id="bankAccountNumber" name="bankAccountNumber" required>
+
+        <!-- Tlačítka pro přidání a aktualizaci pojištěnce -->
+        <button type="button" id="addInsuredBtn" onclick="addInsured()">Add Insured</button>
+        <button type="button" id="saveChangesBtn" style="display: none;" onclick="saveChanges()">Save Changes</button>
+    </form>
+
+    <!-- Kontejner pro tabulku pojištěnců -->
+    <div id="insuredTableContainer" style="display: none;">
+        <h2>Insured List</h2>
+        <table id="insuredTable">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Birth Date</th>
+                <th>Address</th>
+                <th>Telephone Number</th>
+                <th>Bank Account Number</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function resetPage() {
+        document.getElementById("insuredForm").style.display = "none";
+        document.getElementById("insuredTableContainer").style.display = "none";
+        document.getElementById("addInsuredBtn").style.display = "inline-block";
+        document.getElementById("saveChangesBtn").style.display = "none";
+    }
+
+    function showAddForm() {
+        document.getElementById("insuredForm").style.display = "block";
+        document.getElementById("insuredTableContainer").style.display = "none";
+        document.getElementById("addInsuredBtn").style.display = "inline-block";
+        document.getElementById("saveChangesBtn").style.display = "none";
+        document.getElementById("insuredForm").reset();
+    }
+
+    function removeInsured() {
+    const id = prompt("Enter ID of insured to remove:");
+    if (id) {
+        fetch('http://localhost:8081/api/insureds/remove/' + id, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to remove insured. Status: " + response.status);
+            }
+            return response.text();
+        })
+        .then(message => alert(message))
+        .catch(error => alert('Error removing insured: ' + error));
+    }
+}
+
+    function addInsured() {
+        const insuredData = {
+            id: document.getElementById('id').value,
+            name: document.getElementById('name').value,
+            surname: document.getElementById('surname').value,
+            birthDate: document.getElementById('birthDate').value,
+            address: document.getElementById('address').value,
+            telephoneNumber: document.getElementById('telephoneNumber').value,
+            bankAccountNumber: document.getElementById('bankAccountNumber').value
+        };
+
+        fetch('http://localhost:8081/api/insureds/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(insuredData)
+        }).then(response => response.json())
+          .then(data => {
+              alert('Insured added successfully!');
+              resetPage();
+          })
+          .catch(error => alert('Error adding insured: ' + error));
+    }
+
+    function findInsured() {
+        const id = prompt("Enter ID of insured to find:");
+        if (id) {
+            fetch(`http://localhost:8081/api/insureds/find/${id}`)
+              .then(response => response.json())
+              .then(data => {
+                  document.getElementById("insuredForm").style.display = "block";
+                  document.getElementById("addInsuredBtn").style.display = "none";
+                  document.getElementById("saveChangesBtn").style.display = "inline-block";
+
+                  document.getElementById('id').value = data.id;
+                  document.getElementById('name').value = data.name;
+                  document.getElementById('surname').value = data.surname;
+                  document.getElementById('birthDate').value = data.birthDate;
+                  document.getElementById('address').value = data.address;
+                  document.getElementById('telephoneNumber').value = data.telephoneNumber;
+                  document.getElementById('bankAccountNumber').value = data.bankAccountNumber;
+              })
+              .catch(error => alert('Error finding insured: ' + error));
+        }
+    }
+
+    function saveChanges() {
+        const insuredData = {
+            id: document.getElementById('id').value,
+            name: document.getElementById('name').value,
+            surname: document.getElementById('surname').value,
+            birthDate: document.getElementById('birthDate').value,
+            address: document.getElementById('address').value,
+            telephoneNumber: document.getElementById('telephoneNumber').value,
+            bankAccountNumber: document.getElementById('bankAccountNumber').value
+        };
+
+        fetch(`http://localhost:8081/api/insureds/update/${insuredData.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(insuredData)
+        }).then(response => response.json())
+          .then(data => {
+              alert('Insured updated successfully!');
+              resetPage();
+          })
+          .catch(error => alert('Error updating insured: ' + error));
+    }
+
+    function listAllInsured() {
+        document.getElementById("insuredForm").style.display = "none";
+
+        fetch('http://localhost:8081/api/insureds/list')
+          .then(response => response.json())
+          .then(data => {
+              const insuredTableContainer = document.getElementById("insuredTableContainer");
+              const insuredTableBody = document.getElementById("insuredTable").querySelector("tbody");
+
+              insuredTableBody.innerHTML = "";
+              insuredTableContainer.style.display = "block";
+
+              data.forEach(insured => {
+                  const row = insuredTableBody.insertRow();
+                  row.innerHTML = `
+                      <td>${insured.id}</td>
+                      <td>${insured.name}</td>
+                      <td>${insured.surname}</td>
+                      <td>${insured.birthDate || ''}</td>
+                      <td>${insured.address}</td>
+                      <td>${insured.telephoneNumber || ''}</td>
+                      <td>${insured.bankAccountNumber || ''}</td>
+                  `;
+              });
+          })
+          .catch(error => {
+              document.getElementById("insuredTableContainer").style.display = "block";
+              document.getElementById("insuredTable").querySelector("tbody").textContent = 'Error listing insured: ' + error;
+          });
+    }
+</script>
+</body>
+</html>

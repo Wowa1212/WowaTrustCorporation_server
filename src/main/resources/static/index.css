@@ -1,0 +1,138 @@
+body {
+     font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-image: url("/Space2.jpg");
+        background-size: cover;          /* Zajistí pokrytí celého pozadí */
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-attachment: fixed;     /* Fixuje obrázek, aby se neposouval */
+        color: #fff;
+}
+
+/* Základní styl pro všechna tlačítka */
+.button {
+    padding: 10px 20px;
+    background-color: #000000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #333333;
+}
+
+/* Styl pro tlačítka Add Insured a Save Changes */
+#addInsuredBtn, #saveChangesBtn {
+    background-color: #28a745; /* Zelená barva */
+    color: white;
+    border-radius: 20px; /* Zakulacení tlačítka */
+    padding: 10px 25px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+#addInsuredBtn:hover, #saveChangesBtn:hover {
+    background-color: #218838; /* Tmavší zelená při najetí myší */
+}
+
+.container {
+    max-width: 90%; /* Zvětší šířku kontejneru */
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    color: #000;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+}
+h1 {
+    text-align: center;
+    cursor: pointer;
+}
+
+.button-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.button {
+    padding: 10px 20px;
+    background-color: #000000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #333333;
+}
+
+form {
+    max-width: 500px;
+    margin: 0 auto;
+    display: none;
+}
+
+label, input {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="text"], input[type="date"], input[type="tel"], input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+    margin-top: 10px;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Tabulka Insured List */
+#insuredTableContainer {
+    background-color: #ffffff; /* Nastaví bílé pozadí */
+    color: #000000;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+    display: none;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
