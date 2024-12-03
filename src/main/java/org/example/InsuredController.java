@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller // Změna z @RestController na @Controller pro podporu zobrazení šablon
@@ -25,11 +26,12 @@ public class InsuredController {
     @ResponseBody
     public ResponseEntity<?> findInsured(@PathVariable("id") int id) {
         Optional<Insured> insured = insuredRepository.findById(id);
+
         if (insured.isPresent()) {
             return ResponseEntity.ok(insured.get());
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Insured with ID " + id + " not found");
+                    .body(Map.of("error", "Insured with ID " + id + " not found"));
         }
     }
 

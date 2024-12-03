@@ -20,7 +20,6 @@
     <form id="insuredForm" style="display: none;">
         <label for="id">ID:</label>
         <input type="number" id="id" name="id" required>
-
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required>
         <label for="surname">Surname:</label>
@@ -76,21 +75,21 @@
     }
 
     function removeInsured() {
-    const id = prompt("Enter ID of insured to remove:");
-    if (id) {
-        fetch('http://localhost:8081/api/insureds/remove/' + id, {
-            method: 'DELETE',
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Failed to remove insured. Status: " + response.status);
-            }
-            return response.text();
-        })
-        .then(message => alert(message))
-        .catch(error => alert('Error removing insured: ' + error));
+        const id = prompt("Enter ID of insured to remove:");
+        if (id) {
+            fetch('http://localhost:8081/api/insureds/remove/' + id, { method: 'DELETE' })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.error || "Failed to remove insured.");
+                        });
+                    }
+                    return response.text();
+                })
+                .then(message => alert(message))
+                .catch(error => alert('Error removing insured: ' + error.message));
+        }
     }
-}
 
     function addInsured() {
         const insuredData = {
@@ -107,35 +106,56 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(insuredData)
-        }).then(response => response.json())
-          .then(data => {
-              alert('Insured added successfully!');
-              resetPage();
-          })
-          .catch(error => alert('Error adding insured: ' + error));
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || "Failed to add insured.");
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Insured added successfully!');
+                resetPage();
+            })
+            .catch(error => alert('Error adding insured: ' + error.message));
     }
 
     function findInsured() {
-        const id = prompt("Enter ID of insured to find:");
-        if (id) {
-            fetch(`http://localhost:8081/api/insureds/find/${id}`)
-              .then(response => response.json())
-              .then(data => {
-                  document.getElementById("insuredForm").style.display = "block";
-                  document.getElementById("addInsuredBtn").style.display = "none";
-                  document.getElementById("saveChangesBtn").style.display = "inline-block";
+    const id = prompt("Enter ID of insured to find:");
+    if (id) {
+        // Skryje seznam všech pojištěnců, pokud je viditelný
+        document.getElementById("insuredTableContainer").style.display = "none";
 
-                  document.getElementById('id').value = data.id;
-                  document.getElementById('name').value = data.name;
-                  document.getElementById('surname').value = data.surname;
-                  document.getElementById('birthDate').value = data.birthDate;
-                  document.getElementById('address').value = data.address;
-                  document.getElementById('telephoneNumber').value = data.telephoneNumber;
-                  document.getElementById('bankAccountNumber').value = data.bankAccountNumber;
-              })
-              .catch(error => alert('Error finding insured: ' + error));
-        }
+        fetch(`http://localhost:8081/api/insureds/find/${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || "Failed to find insured.");
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Zobrazení formuláře pro jednoho Insured
+                document.getElementById("insuredForm").style.display = "block";
+                document.getElementById("addInsuredBtn").style.display = "none";
+                document.getElementById("saveChangesBtn").style.display = "inline-block";
+
+                // Vyplnění dat Insured do formuláře
+                document.getElementById('id').value = data.id;
+                document.getElementById('name').value = data.name;
+                document.getElementById('surname').value = data.surname;
+                document.getElementById('birthDate').value = data.birthDate;
+                document.getElementById('address').value = data.address;
+                document.getElementById('telephoneNumber').value = data.telephoneNumber;
+                document.getElementById('bankAccountNumber').value = data.bankAccountNumber;
+            })
+            .catch(error => alert('Error finding insured: ' + error.message));
     }
+}
+
 
     function saveChanges() {
         const insuredData = {
@@ -152,43 +172,48 @@
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(insuredData)
-        }).then(response => response.json())
-          .then(data => {
-              alert('Insured updated successfully!');
-              resetPage();
-          })
-          .catch(error => alert('Error updating insured: ' + error));
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || "Failed to update insured.");
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Insured updated successfully!');
+                resetPage();
+            })
+            .catch(error => alert('Error updating insured: ' + error.message));
     }
 
     function listAllInsured() {
         document.getElementById("insuredForm").style.display = "none";
 
         fetch('http://localhost:8081/api/insureds/list')
-          .then(response => response.json())
-          .then(data => {
-              const insuredTableContainer = document.getElementById("insuredTableContainer");
-              const insuredTableBody = document.getElementById("insuredTable").querySelector("tbody");
+            .then(response => response.json())
+            .then(data => {
+                const insuredTableContainer = document.getElementById("insuredTableContainer");
+                const insuredTableBody = document.getElementById("insuredTable").querySelector("tbody");
 
-              insuredTableBody.innerHTML = "";
-              insuredTableContainer.style.display = "block";
+                insuredTableBody.innerHTML = "";
+                insuredTableContainer.style.display = "block";
 
-              data.forEach(insured => {
-                  const row = insuredTableBody.insertRow();
-                  row.innerHTML = `
-                      <td>${insured.id}</td>
-                      <td>${insured.name}</td>
-                      <td>${insured.surname}</td>
-                      <td>${insured.birthDate || ''}</td>
-                      <td>${insured.address}</td>
-                      <td>${insured.telephoneNumber || ''}</td>
-                      <td>${insured.bankAccountNumber || ''}</td>
-                  `;
-              });
-          })
-          .catch(error => {
-              document.getElementById("insuredTableContainer").style.display = "block";
-              document.getElementById("insuredTable").querySelector("tbody").textContent = 'Error listing insured: ' + error;
-          });
+                data.forEach(insured => {
+                    const row = insuredTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${insured.id}</td>
+                        <td>${insured.name}</td>
+                        <td>${insured.surname}</td>
+                        <td>${insured.birthDate || ''}</td>
+                        <td>${insured.address}</td>
+                        <td>${insured.telephoneNumber || ''}</td>
+                        <td>${insured.bankAccountNumber || ''}</td>
+                    `;
+                });
+            })
+            .catch(error => alert('Error listing insured: ' + error.message));
     }
 </script>
 </body>

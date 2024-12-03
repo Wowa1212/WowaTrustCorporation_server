@@ -20,10 +20,6 @@ public class DatabaseOfTheInsured {
         return insuredRepository.save(insured);
     }
 
-    // Hledání pojištěnců podle části jména nebo příjmení
-    public List<Insured> findInsuredByPartialNameOrSurname(String partialInput) {
-        return insuredRepository.findByNameContainingIgnoreCaseOrSurnameContainingIgnoreCase(partialInput, partialInput);
-    }
 
     // Vyhledání pojištěnce podle ID
     public Insured findInsuredByID(int id) {
