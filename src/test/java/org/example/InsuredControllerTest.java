@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,7 +39,7 @@ class InsuredControllerTest {
         ResponseEntity<?> response = insuredController.findInsured(1);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(insured, response.getBody());
+        assertEquals(insured, response.getBody()); // Test očekává vrácení objektu Insured
     }
 
     @Test
@@ -48,14 +49,14 @@ class InsuredControllerTest {
         ResponseEntity<?> response = insuredController.findInsured(1);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Insured with ID 1 not found", response.getBody());
+        assertEquals("Insured with ID 1 not found", ((Map<?, ?>) response.getBody()).get("error"));
     }
 
     @Test
     void testRemoveInsured_Success() {
         when(insuredRepository.existsById(1)).thenReturn(true);
 
-        ResponseEntity<String> response = insuredController.removeInsured(1);
+        ResponseEntity<?> response = insuredController.removeInsured(1);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Insured with ID 1 successfully removed", response.getBody());
@@ -66,7 +67,7 @@ class InsuredControllerTest {
     void testRemoveInsured_NotFound() {
         when(insuredRepository.existsById(1)).thenReturn(false);
 
-        ResponseEntity<String> response = insuredController.removeInsured(1);
+        ResponseEntity<?> response = insuredController.removeInsured(1);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Insured with ID 1 not found", response.getBody());
@@ -83,7 +84,7 @@ class InsuredControllerTest {
         ResponseEntity<?> response = insuredController.updateInsured(1, updatedInsured);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(updatedInsured, response.getBody());
+        assertEquals(updatedInsured, response.getBody()); // Test očekává vrácení objektu Insured
     }
 
     @Test
@@ -105,10 +106,10 @@ class InsuredControllerTest {
         );
         when(insuredRepository.findAll()).thenReturn(insuredList);
 
-        ResponseEntity<List<Insured>> response = insuredController.listAllInsured();
+        ResponseEntity<?> response = insuredController.listAllInsured();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(insuredList, response.getBody());
+        assertEquals(insuredList, response.getBody()); // Test očekává seznam objektů Insured
     }
 
     @Test
@@ -118,9 +119,9 @@ class InsuredControllerTest {
 
         when(insuredRepository.save(newInsured)).thenReturn(savedInsured);
 
-        ResponseEntity<Insured> response = insuredController.addInsured(newInsured);
+        ResponseEntity<?> response = insuredController.addInsured(newInsured);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(savedInsured, response.getBody());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(savedInsured, response.getBody()); // Test očekává vrácení objektu Insured
     }
 }

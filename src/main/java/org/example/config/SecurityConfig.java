@@ -19,13 +19,21 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().permitAll() // Povolení pro všechny požadavky bez autentizace
+                        .requestMatchers("/style.css").permitAll() // Povolit přístup ke style.css
+                        .anyRequest().authenticated() // Ostatní požadavky vyžadují přihlášení
                 )
-                .formLogin(form -> form // Konfigurace přihlašovací stránky
-                        .loginPage("/login") // Pokud chcete vlastní přihlašovací stránku
+                .formLogin(form -> form
+                        .loginPage("/login") // Vlastní přihlašovací stránka
                         .permitAll()
                 )
-                .csrf(csrf -> csrf.disable()); // Vypnuto pro testování
+                .logout(logout -> logout
+                        .logoutUrl("/logout") // URL pro odhlášení
+                        .logoutSuccessUrl("/login") // Přesměrování na login po odhlášení
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
+                )
+                .csrf(csrf -> csrf.disable()); // CSRF ochrana vypnutá (pro testování)
 
         return http.build();
     }

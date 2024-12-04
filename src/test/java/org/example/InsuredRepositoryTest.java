@@ -14,6 +14,10 @@ public class InsuredRepositoryTest {
     @Autowired
     private InsuredRepository insuredRepository;
 
+    public InsuredRepositoryTest(InsuredRepository insuredRepository) {
+        this.insuredRepository = insuredRepository;
+    }
+
     @BeforeEach
     void setUp() {
         // Vložíme testovací data do databáze před každým testem

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Controller // Změna z @RestController na @Controller pro podporu zobrazení šablon
+@Controller
 @RequestMapping("/api/insureds")
 public class InsuredController {
 
@@ -21,7 +21,6 @@ public class InsuredController {
         this.insuredRepository = insuredRepository;
     }
 
-    // Najde pojištěnce podle ID
     @GetMapping("/find/{id}")
     @ResponseBody
     public ResponseEntity<?> findInsured(@PathVariable("id") int id) {
@@ -35,7 +34,6 @@ public class InsuredController {
         }
     }
 
-    // Smaže pojištěnce podle ID
     @DeleteMapping("/remove/{id}")
     @ResponseBody
     public ResponseEntity<String> removeInsured(@PathVariable("id") int id) {
@@ -48,7 +46,6 @@ public class InsuredController {
         }
     }
 
-    // Aktualizuje údaje pojištěnce podle ID
     @PutMapping("/update/{id}")
     @ResponseBody
     public ResponseEntity<?> updateInsured(@PathVariable("id") int id, @RequestBody Insured updatedInsured) {
@@ -69,7 +66,6 @@ public class InsuredController {
         }
     }
 
-    // Vrátí seznam všech pojištěnců
     @GetMapping("/list")
     @ResponseBody
     public ResponseEntity<List<Insured>> listAllInsured() {
@@ -77,28 +73,24 @@ public class InsuredController {
         return ResponseEntity.ok(insuredList);
     }
 
-    // Přidá nového pojištěnce
     @PostMapping("/add")
     @ResponseBody
     public ResponseEntity<Insured> addInsured(@RequestBody Insured newInsured) {
         Insured savedInsured = insuredRepository.save(newInsured);
-        return ResponseEntity.ok(savedInsured);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedInsured);
     }
 
-    // Přesměruje na index.html
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String home() {
         return "redirect:/index.html";
     }
-
-    // Přidání metody pro obsluhu přihlašovací stránky
-
     @Controller
     public class LoginController {
 
         @GetMapping("/login")
         public String login() {
-            return "login"; // Vrací název šablony v templates/login.html
+            return "login"; // Vrací šablonu templates/login.html
         }
     }
+
 }

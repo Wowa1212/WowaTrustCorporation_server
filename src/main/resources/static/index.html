@@ -5,9 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wowa Trust Corporation</title>
     <link rel="stylesheet" href="index.css">
+    <style>
+        /* Styl pro tlačítko Log Out */
+        .logout-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Zajištění dostatečného odsazení kontejneru */
+        .container {
+            margin-top: 50px;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
+    <!-- Tlačítko Log Out -->
+    <button class="logout-button" onclick="logout()">Log Out</button>
+
     <h1 onclick="resetPage()">Wowa Trust Corporation</h1>
     <div class="button-container">
         <button id="addInsuredButton" class="button" onclick="showAddForm()">Add Insured</button>
@@ -15,6 +41,7 @@
         <button id="findInsuredButton" class="button" onclick="findInsured()">Find Insured</button>
         <button id="listAllInsuredButton" class="button" onclick="listAllInsured()">List All Insured</button>
     </div>
+
 
     <!-- Formulář pro přidání pojištěnce -->
     <form id="insuredForm" style="display: none;">
@@ -59,6 +86,8 @@
 </div>
 
 <script>
+
+
     function resetPage() {
         document.getElementById("insuredForm").style.display = "none";
         document.getElementById("insuredTableContainer").style.display = "none";
@@ -123,39 +152,35 @@
     }
 
     function findInsured() {
-    const id = prompt("Enter ID of insured to find:");
-    if (id) {
-        // Skryje seznam všech pojištěnců, pokud je viditelný
-        document.getElementById("insuredTableContainer").style.display = "none";
+        const id = prompt("Enter ID of insured to find:");
+        if (id) {
+            document.getElementById("insuredTableContainer").style.display = "none";
 
-        fetch(`http://localhost:8081/api/insureds/find/${id}`)
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => {
-                        throw new Error(err.error || "Failed to find insured.");
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Zobrazení formuláře pro jednoho Insured
-                document.getElementById("insuredForm").style.display = "block";
-                document.getElementById("addInsuredBtn").style.display = "none";
-                document.getElementById("saveChangesBtn").style.display = "inline-block";
+            fetch(`http://localhost:8081/api/insureds/find/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.error || "Failed to find insured.");
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById("insuredForm").style.display = "block";
+                    document.getElementById("addInsuredBtn").style.display = "none";
+                    document.getElementById("saveChangesBtn").style.display = "inline-block";
 
-                // Vyplnění dat Insured do formuláře
-                document.getElementById('id').value = data.id;
-                document.getElementById('name').value = data.name;
-                document.getElementById('surname').value = data.surname;
-                document.getElementById('birthDate').value = data.birthDate;
-                document.getElementById('address').value = data.address;
-                document.getElementById('telephoneNumber').value = data.telephoneNumber;
-                document.getElementById('bankAccountNumber').value = data.bankAccountNumber;
-            })
-            .catch(error => alert('Error finding insured: ' + error.message));
+                    document.getElementById('id').value = data.id;
+                    document.getElementById('name').value = data.name;
+                    document.getElementById('surname').value = data.surname;
+                    document.getElementById('birthDate').value = data.birthDate;
+                    document.getElementById('address').value = data.address;
+                    document.getElementById('telephoneNumber').value = data.telephoneNumber;
+                    document.getElementById('bankAccountNumber').value = data.bankAccountNumber;
+                })
+                .catch(error => alert('Error finding insured: ' + error.message));
+        }
     }
-}
-
 
     function saveChanges() {
         const insuredData = {
@@ -214,6 +239,10 @@
                 });
             })
             .catch(error => alert('Error listing insured: ' + error.message));
+    }
+
+    function logout() {
+        location.href = '/logout';
     }
 </script>
 </body>
